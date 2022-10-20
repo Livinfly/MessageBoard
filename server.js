@@ -44,7 +44,7 @@ app.post('/api/register', async (req, res) => {
 })
 // 登录
 app.post('/api/login', async (req, res) => {
-  if (req.headers.referer == 'http://localhost:8080/') {
+  if (req.headers.referer === 'http://localhost:8080/') {
     const data = req.body
     const user = await User.findOne({
       username: data.username
@@ -65,7 +65,7 @@ app.post('/api/login', async (req, res) => {
     const url = 'http://localhost:8080/comments/' + '?username=' + user.username + '&token=' + token
     res.redirect(url)
   }
-  else {
+  else if (req.headers.referer === 'http://localhost:8080/admin') {
     const data = req.body
     const user = await User.findOne({
       username: data.username
@@ -87,6 +87,30 @@ app.post('/api/login', async (req, res) => {
       id: String(user._id),
     }, SECRET)
     const url = 'http://localhost:8080/backyard'
+    res.redirect(url)
+  }
+  else if (req.headers.referer === 'http://localhost:8080/super_admin') {
+    const data = req.body
+    const user = await User.findOne({
+      username: data.username
+    })
+    if (!user) {
+      return res.send('<h1>the account doesn\'t existed!</h1 > <a href=" / ">返回</a>')
+    }
+    if (data.level < 2) {
+      return res.send('<h1>the POWER account doesn\'t existed!</h1><a href=" / ">返回</a>')
+    }
+    const isPasswordValid = require('bcrypt').compareSync(
+      data.password,
+      user.password
+    )
+    if (!isPasswordValid) {
+      return res.send('<h1>the password is wrong!</h1><a href=" / ">返回</a>')
+    }
+    const token = jwt.sign({
+      id: String(user._id),
+    }, SECRET)
+    const url = 'http://localhost:8080/super_backyard'
     res.redirect(url)
   }
 })
@@ -152,10 +176,18 @@ app.get('/comments', async (req, res) => {
 app.get('/admin', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
 })
+app.get('/super_admin', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html')
+})
 app.get('/backyard', (req, res) => {
   if (req.headers.referer != 'http://localhost:8080/admin' && req.headers.referer != 'http://localhost:8080/backyard')
     return res.send('error')
   res.sendFile(__dirname + '/public/backyard.html')
+})
+app.get('/super_backyard', (req, res) => {
+  if (req.headers.referer != 'http://localhost:8080/super_admin' && req.headers.referer != 'http://localhost:8080/super_backyard')
+    return res.send('error')
+  res.sendFile(__dirname + '/public/super_backyard.html')
 })
 let new_status = false
 app.post('/cmtpass', async (req, res) => {
@@ -170,7 +202,7 @@ app.post('/cmtpass', async (req, res) => {
     })
     Comments.updateOne({ username: data.username, submit_time: data.submit_time }, { status: new_status }, (err, res) => {
       if (err) throw err
-      console.log('upd')
+      console.log('cmt_upd')
     })
   }
   else {
@@ -181,15 +213,41 @@ app.post('/cmtdel', async (req, res) => {
   if (req.headers.referer === 'http://localhost:8080/backyard') {
     const data = req.body
     // console.log(data)
-
-    Comments.findOne({ username: data.username, submit_time: data.submit_time }, (err, res) => {
-      if (err) throw err
-      if (!res.status) new_status = true
-      else new_status = false
-    })
     Comments.deleteOne({ username: data.username, submit_time: data.submit_time }, (err, res) => {
       if (err) throw err
-      console.log('del')
+      console.log('cmt_del')
+    })
+  }
+  else {
+    res.send('error')
+  }
+})
+let new_level = 0
+app.post('/usermod', async (req, res) => {
+  if (req.headers.referer === 'http://localhost:8080/super_backyard') {
+    const data = req.body
+
+    User.findOne({ username: data.username }, (err, res) => {
+      if (err) throw err
+      if (res.level === 1) new_level = 0
+      else new_level = 1
+    })
+    User.updateOne({ username: data.username }, { level: new_level }, (err, res) => {
+      if (err) throw err
+      console.log('usr_upd')
+    })
+  }
+  else {
+    res.send('error')
+  }
+})
+app.post('/userdel', async (req, res) => {
+  if (req.headers.referer === 'http://localhost:8080/super_backyard') {
+    const data = req.body
+
+    User.deleteOne({ username: data.username }, (err, res) => {
+      if (err) throw err
+      console.log('usr_del')
     })
   }
   else {
