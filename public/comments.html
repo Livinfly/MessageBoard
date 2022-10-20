@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../css/comments.css" type="text/css">
+  <script type="text/javascript" src="../js/script.js"></script>
+  <title>Comments</title>
+</head>
+
+<body>
+  <div>
+    <div class="outter_box">
+      <div class="title_bk">
+        <span class="comments_title">Comments</span>
+      </div>
+    </div>
+    <div class="comment_sender">
+      <div>
+        <form action="/submit" method="post">
+          <textarea id="inContent" name="content" class="input_text" maxlength="1031"></textarea>
+          <input type="submit" value="发表留言" class="input_button">
+        </form>
+      </div>
+    </div>
+    <div class="comments">
+      <div class="comment">
+        <span class="comment_usernamebox">
+          <span class="comment_textfont1">Sanmo</span>
+        </span>
+        <span class="comment_content"
+          style="align-items: center; justify-content: center; font-size: 80px;">留下你的足迹</span>
+        <div class="comment_timebox">
+          <span class="comment_textfont2" style="font-weight: bold;">
+            ????/??/??
+            ??:??</span>
+        </div>
+      </div>
+    </div>
+    <div class="comments" id="comments">
+
+      <!-- <div class="comment" style="margin: 50px">
+        <span class="comment_usernamebox">
+          <span class="comment_textfont1">shichong</span>
+        </span>
+        <span
+          class="comment_content">每一次留言都当成最后一次，然后就也不要怕被封每一次留言都当成最后一次，然后就也不要怕被封每一次留言都当成最后一次，然后就也不要怕被封每一次留言都当成最后一次，然后就也不要怕被封每一次留言都当成最后一次，然后就也不要怕被封</span>
+        <div class="comment_timebox">
+          <span class="comment_textfont2"> 2022/10/19 15:51</span>
+        </div>
+      </div> -->
+      <script>
+        fetch('/cmts').then(res => res.json()).then(data => {
+          for (let i = data.length - 1; i >= 0; i--) {
+            let comment = data[i]
+            if (comment.status === true) {
+              // console.log(comment)
+              let newDiv = document.createElement('div')
+              newDiv.className = "comment"
+              newDiv.style = "margin: 50px"
+              newDiv.innerHTML = '<span class="comment_usernamebox">' +
+                '<span class="comment_textfont1">' +
+                comment.username +
+                '</span>' +
+                '</span>' +
+                '<span class="comment_content">' +
+                comment.content +
+                '</span>' +
+                '<div class="comment_timebox">' +
+                '<span class="comment_textfont2">' +
+                comment.submit_time +
+                '</span>' +
+                '</div>';
+              document.getElementById('comments').appendChild(newDiv)
+            }
+          }
+        })
+      </script>
+
+    </div>
+    <h1 class="footer">
+      TO BE CONTINUED...
+    </h1>
+  </div>
+</body>
+
+</html>

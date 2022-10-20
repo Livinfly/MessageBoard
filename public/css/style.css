@@ -1,0 +1,25 @@
+.form_font {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.form_bk {
+  padding: 10px;
+  background-color: rgb(85, 126, 126);
+  text-align: center;
+  height: 200px;
+  width: 280px;
+  border-radius: 20px;
+  margin: 200px;
+}
+
+.form_inner {
+  height: 100px;
+  width: 280px;
+}
+
+.wrapper_box {
+  display: flex;
+  justify-content: center;
+}

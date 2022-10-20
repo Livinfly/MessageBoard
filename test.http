@@ -1,0 +1,21 @@
+### 放前缀
+@url=http://localhost:8080
+@json=Content-Type: application/json
+
+###
+get {{url}}/api/register
+###
+post {{url}}/api/login
+{{json}}
+
+{
+  "username": "admin",
+  "password": "sanmo.03"
+}
+### 
+get {{url}}/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNGUzZDgzMmZmOWJhYWJjNzcxNmIzMSIsImlhdCI6MTY2NjA3NDI0Nn0.jOgFCbDR4kJl2bcX_zk65_X9warz72_EDluvgc6cAM0
+###
+get {{url}}/users
+### 
+get {{url}}/cmts
